@@ -58,11 +58,76 @@
         group: "{{ httpd_group }}" 
       tags:
         - lamp 
-
     - name : "Apache: Restarting httpd service"  
       service:
         name: httpd
         state: restarted
         enabled: true   
       tags:
+        - lamp
+    
+    - name: "MariaDB: MariaDB server package installation"
+      yum:
+        name: 
+          - mariadb-server
+          - MySQL-python          
+        state: present
+      tags:
         - lamp 
+        - mariadb   
+        
+    - name: "MariaDB: Restart MariaDB service and enable"
+      service:
+        name: mariadb
+        state: restarted
+        enabled: true
+      tags:
+        - lamp 
+        - mariadb  
+        
+    - name: "MariaDB: Setting root user password as {{ mariadb_root_password }}"
+      ignore_errors: true
+      mysql_user: 
+        login_user: "root"
+        login_password: ""
+        name: "root"
+        password: "{{ mariadb_root_password }}"   
+        host_all: true
+      tags:
+        - lamp 
+        - mariadb
+
+    - name: "MariaDB: Removal of anonimous users"
+      mysql_user: 
+        login_user: "root"
+        login_password: "{{ mariadb_root_password }}"
+        name: ""
+        password: ""
+        host_all: true    
+        state: absent   
+      tags:
+        - lamp 
+        - mariadb
+
+    - name: "MariaDB: Creating extra db"
+      mysql_db: 
+        login_user: "root"
+        login_password: "{{ mariadb_root_password }}"
+        name: "{{ mariadb_extra_database }}"
+        state: present
+      tags:
+        - lamp 
+        - mariadb
+
+    - name: "MariaDB: Creating extra user"
+      mysql_user: 
+        login_user: "root"
+        login_password: "{{ mariadb_root_password }}"
+        user: "{{ mariadb_extra_user }}"
+        password: "{{ mariadb_extra_user_password }}"
+        state: present
+        host: "%"
+        priv: "{{ mariadb_extra_database }}.*:ALL"   
+      tags:
+        - lamp 
+        - mariadb 

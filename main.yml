@@ -2,8 +2,6 @@
 - name: "Installing Wordpress"
   become: true
   hosts: amazon
-  vars_files:
-    - virtualhost-template       
   vars:
     httpd_owner: "apache"
     httpd_group: "apache"
@@ -44,3 +42,27 @@
         dest: "/etc/httpd/conf.d/{{ httpd_domain }}.conf"
         owner: "{{ httpd_owner }}"
         group: "{{ httpd_group }}"
+        
+    - name: "Apache: Removing previous contents of docroot"
+      file:
+        path: "{{ httpd_docroot }}"      
+        state: absent
+      tags:
+        - lamp 
+
+    - name: "Apache: Creating docroot at {{ httpd_docroot }}{{ httpd_domain}} "  
+      file:
+        path: "{{ httpd_docroot }}{{ httpd_domain}}"
+        state: directory
+        owner: "{{ httpd_owner }}"
+        group: "{{ httpd_group }}" 
+      tags:
+        - lamp 
+
+    - name : "Apache: Restarting httpd service"  
+      service:
+        name: httpd
+        state: restarted
+        enabled: true   
+      tags:
+        - lamp 

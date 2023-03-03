@@ -1,0 +1,23 @@
+---
+- name: "Installing Wordpress"
+  become: true
+  hosts: amazon
+  vars:
+    httpd_owner: "apache"
+    httpd_group: "apache"
+    httpd_port: 80
+    httpd_domain: "blog.pratheeshsatheeshkumar.online"
+    httpd_docroot: "/var/www/html/"
+    mariadb_root_password: "mysqlroot123"
+    mariadb_extra_user: "bloguser"
+    mariadb_extra_user_password: "bloguser123"
+    mariadb_extra_database: "blogdatabase"
+    wp_url: "https://wordpress.org/wordpress-6.0.3.tar.gz"
+  tasks:
+
+    - name: "Apache: Installing Apache Webserver"
+      yum:
+        name: httpd
+        state: present
+      tags:
+        - lamp 

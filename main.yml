@@ -21,3 +21,24 @@
         state: present
       tags:
         - lamp 
+        
+    - name: "Apache: Enabling php support"
+      shell: amazon-linux-extras install php7.4 -y
+      tags:
+        - lamp 
+
+    - name: "Apache: Creating httpd.conf from httpd.conf.j2"
+      template:
+        src: ./httpd.conf.j2 
+        dest: /etc/httpd/conf/httpd.conf
+        owner: "{{ httpd_owner }}"
+        group: "{{ httpd_group }}"
+      tags:
+        - lamp 
+
+    - name: "Apache: Creating virtualhost.conf from virtualhost.conf.j2"
+      template:
+        src: ./virtualhost.conf.j2
+        dest: "/etc/httpd/conf.d/{{ httpd_domain }}.conf"
+        owner: "{{ httpd_owner }}"
+        group: "{{ httpd_group }}"

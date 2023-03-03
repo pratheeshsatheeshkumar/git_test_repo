@@ -2,6 +2,8 @@
 - name: "Installing Wordpress"
   become: true
   hosts: amazon
+  vars_files:
+    - virtualhost-template       
   vars:
     httpd_owner: "apache"
     httpd_group: "apache"
